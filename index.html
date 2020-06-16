@@ -1,44 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-<style>
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333;
-}
-
-li {
-  float: left;
-}
-
-li a {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-li a:hover:not(.active) {
-  background-color: #111;
-}
-
-.active {
-  background-color: #4CAF50;
-}
-</style>
-</head>
 <body>
 
-<ul>
-  <li><a class="active" href="http://suprem.sec.samsung.net/dashboard/sr">Home</a></li>
-  <li><a href="http://suprem.sec.samsung.net/dashboard/sr/operating/1">SR</a></li>
-  <li><a href="http://suprem.sec.samsung.net/grcdashboard/orc/operation?rndCode=ALL&isCollapseMenu=true">GRC</a></li>
-</ul>
-<img src="https://happywood21c.github.io/dashboard/SR Home.jpg" alt="Trulli">
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+</script>
 
 </body>
 </html>
