@@ -1,46 +1,117 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
+ <script language='javascript'>
+ function change(num) {
+   var x  = document.form;
+   var y = Number(x.count.value) + num;
+   if(y < 1) y = 1;
+   x.count.value = y;
+   var z =x.count.value*100;
+   document.getElementById("demo").innerHTML ="The value is: " + z;
+    };
 
+ </script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+  <script >
+var ourCoords = { //서울 시청 좌표
+    latitude : 37.270081,  //위도
+    longitude : 127.128893  //경도
+};
+
+window.onload = getMyLocation;
+
+function getMyLocation() {
+
+     // navigator.geolocation 없다면 null을 반환하고 조건식의 결과는 false
+    if (navigator.geolocation) {
+        
+        //getCurrentPosition(successhandler, errorHandler, option)
+        navigator.geolocation.getCurrentPosition(
+            displayLocation, 
+            displayError); 
+    } else {
+        alert("내 위치 정보제공 설정이 꺼져있거나, 지원하지 않는 브라우져 입니다." );
+    }
+}
+
+function displayLocation(position) {
+
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    
+    $("#location").html("당신은 위도: " + latitude 
+                            +", 경도: " + longitude + "에 있습니다");
+    
+    var distance = computeDistance(position.coords, ourCoords);
+    $("#distance").html("당신은 서울시청과 "+distance+"km 떨어져 있습니다.");
+                        
+}
+
+function displayError(error) {
+    var errorTypes = {
+        0: "알려지지 않은 에러",
+        1: "사용자가 권한 거부",
+        2: "위치를 찾을 수 없음",
+        3: "요청 응답 시간 초과"
+    };
+    var errorMessage = errorTypes[error.code];
+    if (error.code == 0 || error.code == 2) {
+        errorMessage = errorMessage + " " + error.message;
+    }
+    $("#location").html(errorMessage);        
+}
+
+
+// 구면 코사인 법칙(Spherical Law of Cosine) 으로 두 위도/경도 지점의 거리를 구함
+// 반환 거리 단위 (km)
+function computeDistance(startCoords, destCoords) {
+    var startLatRads = degreesToRadians(startCoords.latitude);
+    var startLongRads = degreesToRadians(startCoords.longitude);
+    var destLatRads = degreesToRadians(destCoords.latitude);
+    var destLongRads = degreesToRadians(destCoords.longitude);
+
+    var Radius = 6371; //지구의 반경(km)
+    var distance = Math.acos(Math.sin(startLatRads) * Math.sin(destLatRads) + 
+                    Math.cos(startLatRads) * Math.cos(destLatRads) *
+                    Math.cos(startLongRads - destLongRads)) * Radius;
+
+    return distance;
+}
+
+function degreesToRadians(degrees) {
+    radians = (degrees * Math.PI)/180;
+    return radians;
+}
+</script>  
 </head>
 <body>
-  <div class="number">
-  <span id="numberUpDown">1</span>
-  <a href="#" id="increaseQuantity">수량 올림</a>
-      <a href="#" id="decreaseQuantity">수량 내림</a>
+<p id="demo"></p>
+ <form name='form'>
+  <table>
+   <tr>
+    <td>갯수</td>
+    <td>
+     <table>
+      <tr>
+       <td><input type='text' name='count' value='1' size='3' readonly><td>
+       <td>
+        <a href='#' onclick='javascript_:change(1);'>▲</a><br>
+        <a href='#' onclick='javascript_:change(-1);'>▼</a>
+        <!--버튼을 이미지로 바꾸세요 <img src='이미지경로' onclick='javascript_:change(1);'>-->
+       </td>
+      </tr>
+     </table>
 
-  </div>
-  <script>
-  window.onload = function(){
-  $(function(){
-  $('#decreaseQuantity').click(function(e){
-  e.preventDefault();
-  var stat = $('#numberUpDown').text();
-  var num = parseInt(stat,10);
-  num--;
-  if(num<=0){
-  alert('더이상 줄일수 없습니다.');
-  num =1;
-  }
-  $('#numberUpDown').text(num);
-  });
-  $('#increaseQuantity').click(function(e){
-  e.preventDefault();
-  var stat = $('#numberUpDown').text();
-  var num = parseInt(stat,10);
-  num++;
-
-  if(num>5){
-  alert('더이상 늘릴수 없습니다.');
-  num=5;
-  }
-  $('#numberUpDown').text(num);
-  });
-  });
-  }
-
-  </script>
+    </td>
+   </tr>
+  </table>
+ </form>
+  <div id="location">
+        나의 위치가 여기에 나타날 것입니다.
+    </div>
+    <div id="distance">
+        우리집과의 거리가 여기에 나타날 것입니다.
+    </div>
 
 </body>
 </html>
